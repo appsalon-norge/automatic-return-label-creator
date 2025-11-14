@@ -17,7 +17,8 @@
     "prisma": "prisma",
     "graphql-codegen": "graphql-codegen",
     "vite": "vite",
-    "typecheck": "react-router typegen && tsc --noEmit"
+    "typecheck": "react-router typegen && tsc --noEmit",
+    "test": "vitest"
   },
   "type": "module",
   "engines": {
@@ -32,7 +33,9 @@
     "@shopify/app-bridge-react": "^4.2.4",
     "@shopify/shopify-app-react-router": "^1.0.0",
     "@shopify/shopify-app-session-storage-prisma": "^7.0.0",
+    "fast-xml-parser": "^5.3.1",
     "isbot": "^5.1.31",
+    "msw": "^2.12.1",
     "prisma": "^6.16.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -57,7 +60,8 @@
     "graphql-config": "^5.1.1",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3",
-    "vite": "^6.3.6"
+    "vite": "^6.3.6",
+    "vitest": "^4.0.8"
   },
   "workspaces": [
     "extensions/*"
