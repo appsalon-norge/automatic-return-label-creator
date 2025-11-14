@@ -9,7 +9,7 @@ import GetDataDir from "../utils/getDataDir";
 
 test("Cargonizer API Get Label mock test", async () => {
   const DATA_DIR = GetDataDir();
-  const filename = `label-12345.pdf`;
+  const filename = `label-1234.pdf`;
   const fullPath = path.join(DATA_DIR, filename);
   const data = await readFile(fullPath, "utf8");
 

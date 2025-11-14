@@ -1,0 +1,10 @@
+{
+  "tsconfig": "tsconfig.json",
+  "entryPoints": ["app/utils", "app/graphql"],
+  "entryPointStrategy": "expand",
+  "exclude": ["**/node_modules/**", "**/types/**", "**/tests/**", "**/*.d.ts"],
+  "includeVersion": true,
+  "excludeExternals": true,
+  "categorizeByGroup": true,
+  "out": "docs"
+}

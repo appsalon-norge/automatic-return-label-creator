@@ -62,7 +62,7 @@ mutation ReturnApproveRequest($input: ReturnApproveRequestInput!) {
                         }
                       }
                     }
-                  }
+                  } 
                 }
               }
             }
@@ -74,7 +74,12 @@ mutation ReturnApproveRequest($input: ReturnApproveRequestInput!) {
   }
 }
 `;
-
+/**
+ * Creates a GraphQL mutation for accepting a return request.
+ * @param {string} id The Return (GID) identifier.
+ * @param {boolean} [notifyCustomer=false] Whether to notify the customer about the status change.
+ * @returns {{ query: string, variables: { input: { id: string, notifyCustomer: boolean } } }} GraphQL mutation string and variables payload.
+ */
 export const acceptReturnRequestMutation = (
   id: string,
   notifyCustomer: boolean = false,
