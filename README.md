@@ -48,6 +48,14 @@ The return secrets is needed so the the package will be shipped to the correct p
 
 > **_NOTE:_** It might be possible to get this information from shopify, it can be good to check this out!
 
+> **⚠ Return Address / Consignee Clarification:** The data shown in the Cargonizer sandbox dashboard and the printed label can appear inconsistent: party roles (consignee vs return address) may not match intuitive expectations. For this return product the actual delivery destination is the return address already configured in Cargonizer; providing it again in the XML is usually optional. In the current POC XML we deliberately map the store (environment variables) as `<consignee>` and the customer's order shipping information as `<return_addres>`, which can look inverted.
+>
+> Recommended checks:
+>
+> 1. Run a test consignment and confirm delivery goes to the intended store address even if `<return_addres>` is omitted.
+> 2. Confirm with Logistra whether your product code (`bring2_return_pickup_point`) expects the parties swapped for returns.
+> 3. If printed labels show incorrect recipient details, adjust the mapping in `buildConsignments`. (swap the consignee and return_addres and check)
+
 ## Setup
 
 Remember to set all secrets as the app will fail without them.
