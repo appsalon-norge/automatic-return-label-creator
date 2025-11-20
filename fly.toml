@@ -1,0 +1,46 @@
+# fly.toml app configuration file generated for automatic-return-label-creator on 2025-11-19T18:05:11+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'automatic-return-label-creator'
+primary_region = 'arn'
+
+[build]
+
+[build.args]
+  SHOPIFY_API_KEY = "8454362e3c30276739b0af61253df392"
+
+[env]
+  PORT = '3000'
+  LOGISTRA_RETURN_SLIP_IDENTIFIER='bring2_return_pickup_point'
+  LOGISTRA_RETURN_ADDRESS_NAME='MONSIEUR SCABAL AS'
+  LOGISTRA_RETURN_ADDRESS_ADDRESS1='Christian Michelsens gate 2B'
+  LOGISTRA_RETURN_ADDRESS_POSTCODE='5012'
+  LOGISTRA_RETURN_ADDRESS_CITY='Bergen'
+  LOGISTRA_RETURN_ADDRESS_COUNTRY='NO'
+  LOGISTRA_RETURN_ADDRESS_EMAIL='nettbutikk@test.no'
+  LOGISTRA_RETURN_ADDRESS_MOBILE='90 92 85 26'
+
+[processes]
+  app = 'npm run start'
+
+[[mounts]]
+  source = 'data'
+  destination = '/data'
+  auto_extend_size_threshold = 80
+  auto_extend_size_increment = '1GB'
+  auto_extend_size_limit = '10GB'
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1

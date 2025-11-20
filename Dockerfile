@@ -1,18 +1,36 @@
+# --- Build stage ---
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# Bygg-argument for Shopify API key, og eksponer den som Vite-var
+ARG SHOPIFY_API_KEY
+ENV VITE_SHOPIFY_API_KEY=${SHOPIFY_API_KEY}
+
+# Installer avhengigheter
+COPY package*.json ./
+RUN npm ci
+
+# Kopier resten av koden
+COPY . .
+
+# Generer Prisma client
+RUN npx prisma generate
+
+# Bygg appen
+RUN npm run build
+
+# --- Run stage ---
 FROM node:20-alpine
-RUN apk add --no-cache openssl
-
-EXPOSE 3000
-
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY package.json package-lock.json* ./
+# Kopier alt fra builder
+COPY --from=builder /app . 
 
-RUN npm ci --omit=dev && npm cache clean --force
+# Sørg for at /data finnes (volumet mountes her)
+RUN mkdir -p /data
 
-COPY . .
+EXPOSE 3000
 
-RUN npm run build
-
-CMD ["npm", "run", "docker-start"]
+CMD ["sh", "-c", "npm run migrate && npm run start"]

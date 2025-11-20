@@ -9,6 +9,7 @@
     "deploy": "shopify app deploy",
     "config:use": "shopify app config use",
     "env": "shopify app env",
+    "migrate": "prisma migrate deploy",
     "start": "react-router-serve ./build/server/index.js",
     "docker-start": "npm run setup && npm run start",
     "setup": "prisma generate && prisma migrate deploy",
@@ -19,13 +20,14 @@
     "vite": "vite",
     "typecheck": "react-router typegen && tsc --noEmit",
     "test": "vitest",
-  "docs": "typedoc --options typedoc.config.json"
+    "docs": "typedoc --options typedoc.config.json"
   },
   "type": "module",
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
   },
   "dependencies": {
+    "@flydotio/litestream": "^1.0.1",
     "@prisma/client": "^6.16.3",
     "@react-router/dev": "^7.9.3",
     "@react-router/fs-routes": "^7.9.3",
@@ -34,7 +36,7 @@
     "@shopify/app-bridge-react": "^4.2.4",
     "@shopify/shopify-app-react-router": "^1.0.0",
     "@shopify/shopify-app-session-storage-prisma": "^7.0.0",
-    "fast-xml-parser": "^5.3.1",
+    "fast-xml-parser": "^5.3.2",
     "isbot": "^5.1.31",
     "msw": "^2.12.1",
     "prisma": "^6.16.3",
@@ -44,10 +46,11 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.7.10",
     "@shopify/api-codegen-preset": "^1.2.0",
     "@shopify/polaris-types": "^1.0.1",
     "@types/eslint": "^9.6.1",
-    "@types/node": "^22.18.8",
+    "@types/node": "^22.19.1",
     "@types/react": "^18.3.25",
     "@types/react-dom": "^18.3.7",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
@@ -75,5 +78,8 @@
   "overrides": {
     "p-map": "^4.0.0"
   },
-  "author": "bendikkvam"
+  "author": "bendikkvam",
+  "dockerfile": {
+    "litestream": true
+  }
 }

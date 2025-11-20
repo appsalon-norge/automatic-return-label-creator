@@ -63,67 +63,86 @@ const buildConsignments = (
         })
         .filter(Boolean) as any[];
 
+        const customerAddress = {
+          name: val(
+            rfo.order?.shippingAddress?.name ||
+              rfo.order?.billingAddress?.name,
+          ),
+          address1: val(
+            rfo.order?.shippingAddress?.address1 ||
+              rfo.order?.billingAddress?.address1,
+          ),
+          address2: val(
+            rfo.order?.shippingAddress?.address2 ||
+              rfo.order?.billingAddress?.address2,
+          ),
+          postcode: val(
+            rfo.order?.shippingAddress?.zip ||
+              rfo.order?.billingAddress?.zip,
+          ),
+          city: val(
+            rfo.order?.shippingAddress?.city ||
+              rfo.order?.billingAddress?.city,
+          ),
+          country: "NO",
+          email: val(
+            rfo.order?.customer?.defaultEmailAddress?.emailAddress,
+          ),
+          mobile: val(
+            rfo.order?.shippingAddress?.phone ||
+              rfo.order?.billingAddress?.phone,
+          ),
+        };
+        
+        const storeAddress = {
+          name: val(
+            process.env.LOGISTRA_RETURN_ADDRESS_NAME ||
+              process.env.RETURN_ADDRESS_NAME ||
+              "MONSIEUR SCABAL AS",
+          ),
+          address1: val(
+            process.env.LOGISTRA_RETURN_ADDRESS_ADDRESS1 ||
+              process.env.RETURN_ADDRESS_ADDRESS1 ||
+              "Christian Michelsens gate 2B",
+          ),
+          postcode: val(
+            process.env.LOGISTRA_RETURN_ADDRESS_POSTCODE ||
+              process.env.RETURN_ADDRESS_POSTCODE ||
+              "5012",
+          ),
+          city: val(
+            process.env.LOGISTRA_RETURN_ADDRESS_CITY ||
+              process.env.RETURN_ADDRESS_CITY ||
+              "Bergen",
+          ),
+          country: val(
+            process.env.LOGISTRA_RETURN_ADDRESS_COUNTRY ||
+              process.env.RETURN_ADDRESS_COUNTRY ||
+              "NO",
+          ),
+          email: val(
+            process.env.LOGISTRA_RETURN_ADDRESS_EMAIL ||
+              process.env.RETURN_ADDRESS_EMAIL ||
+              "nettbutikk@scabal.no",
+          ),
+          mobile: val(
+            process.env.LOGISTRA_RETURN_ADDRESS_MOBILE ||
+              process.env.RETURN_ADDRESS_MOBILE ||
+              "90 92 85 26",
+          ),
+        };
+
       return {
         consignment: {
           "@_transport_agreement": transportAgreement,
           email_label_to_consignee: true,
           product: "bring2_return_pickup_point",
           parts: {
-            // For return products: consignee should represent the store (environment variables)
-            consignee: {
-              name: val(
-                process.env.LOGISTRA_RETURN_ADDRESS_NAME ||
-                  process.env.RETURN_ADDRESS_NAME ||
-                  "Din Butikk AS",
-              ),
-              address1: val(
-                process.env.LOGISTRA_RETURN_ADDRESS_ADDRESS1 ||
-                  process.env.RETURN_ADDRESS_ADDRESS1 ||
-                  "Butikkgata 2",
-              ),
-              address2: val(
-                process.env.LOGISTRA_RETURN_ADDRESS_ADDRESS2 ||
-                  process.env.RETURN_ADDRESS_ADDRESS2 ||
-                  "v/ Returavdeling",
-              ),
-              postcode: val(
-                process.env.LOGISTRA_RETURN_ADDRESS_POSTCODE ||
-                  process.env.RETURN_ADDRESS_POSTCODE ||
-                  "0150",
-              ),
-              city: val(
-                process.env.LOGISTRA_RETURN_ADDRESS_CITY ||
-                  process.env.RETURN_ADDRESS_CITY ||
-                  "Oslo",
-              ),
-              country: val(
-                process.env.LOGISTRA_RETURN_ADDRESS_COUNTRY ||
-                  process.env.RETURN_ADDRESS_COUNTRY ||
-                  "NO",
-              ),
-              email: val(
-                process.env.LOGISTRA_RETURN_ADDRESS_EMAIL ||
-                  process.env.RETURN_ADDRESS_EMAIL ||
-                  "support@dinbutikk.no",
-              ),
-              mobile: val(
-                process.env.LOGISTRA_RETURN_ADDRESS_MOBILE ||
-                  process.env.RETURN_ADDRESS_MOBILE ||
-                  "97000000",
-              ),
-            },
-            // Return address now reflects the original order's customer shipping/billing details
-            return_addres: {
-              name: val(rfo.order?.shippingAddress?.name),
-              address1: val(rfo.order?.billingAddress?.address1),
-              postcode: val(rfo.order?.billingAddress?.zip),
-              city: val(rfo.order?.billingAddress?.city),
-              country: "NO",
-              email: val(
-                rfo.order?.customer?.defaultEmailAddress?.emailAddress,
-              ),
-              mobile: val(rfo.order?.billingAddress?.phone),
-            },
+            // 👉 Cargonizer bruker denne som "From" på returproduktet
+            consignee: customerAddress,
+      
+            // 👉 Denne blir retur-/butikkadresse
+            return_address: storeAddress,
           },
           items,
           references: {

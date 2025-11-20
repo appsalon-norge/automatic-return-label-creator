@@ -76,9 +76,9 @@ const prepareLabels = async (
 
     //this secret should be the app url + /app/label/
     const ROUTE_TO_PDF =
-      process.env.ROUTE_TO_PDF || "http://localhost:3000/data";
-    //this will be the full url we will send to shopify, including the id, but not file name
-    const fileUrl = ROUTE_TO_PDF + `${consignmentId}`;
+      process.env.ROUTE_TO_PDF || "http://localhost:3000/data/";
+
+    const fileUrl = `${ROUTE_TO_PDF}${consignmentId}`;
 
     return {
       reverseFulfillmentOrderId: matched?.node?.id,
