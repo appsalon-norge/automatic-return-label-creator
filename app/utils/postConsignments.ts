@@ -45,7 +45,7 @@ const buildConsignments = (
       const transportAgreement =
         process.env.LOGISTRA_TRANSPORT_AGREEMENT_ID ||
         process.env.transport_agreement_id ||
-        "1357";
+        "112968854";
 
       const items = (rfo.lineItems?.edges || [])
         .map((liEdge) => {
