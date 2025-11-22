@@ -24,13 +24,15 @@ export default function Index() {
   const fetcher = useFetcher<typeof action>();
 
   return (
-    <s-page heading="Cargonizer retur etiketter">
+    <s-page heading="Appsalon + Cargonizer retur løsning">
 
-      <s-section heading="Automatisk retur etiketter 🎉">
-        <s-paragraph>
-          Appsalon + Cargonizer retur løsning
-        </s-paragraph>
-      </s-section>
+      <s-section heading="Slik fungerer det 🎉">
+      <ol>
+        <li>Kunden forespør retur fra «Min side» i nettbutikken.</li>
+        <li>Returforespørselen behandles automatisk, og retur­etikett sendes på e-post til kunden.</li>
+        <li>Når varen er mottatt, må returen avsluttes og refunderes på vanlig måte i Shopify.</li>
+      </ol>
+    </s-section>
       
     </s-page>
   );
