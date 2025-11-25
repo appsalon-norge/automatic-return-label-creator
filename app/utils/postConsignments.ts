@@ -135,6 +135,7 @@ const buildConsignments = (
       return {
         consignment: {
           "@_transport_agreement": transportAgreement,
+          "@_print": "false",   // 👈 slå av gammel auto-print
           email_label_to_consignee: true,
           product: "bring2_return_pickup_point",
           parts: {
