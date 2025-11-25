@@ -1,9 +1,6 @@
-// app/routes/app.settings.tsx (or app.additional.tsx)
-import { useState } from "react";
-import type {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-} from "react-router";
+// app/routes/app.settings.tsx
+import { useEffect, useState } from "react";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { useFetcher, useLoaderData } from "react-router";
 import { authenticate } from "../shopify.server";
 import {
@@ -20,7 +17,6 @@ type LoaderData = {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
   const config = await readReturnAddress();
-  // just return a plain object – React Router will pass this to useLoaderData
   return { config } satisfies LoaderData;
 };
 
@@ -41,7 +37,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   await writeReturnAddress(config);
 
-  // again: plain object is fine
   return { ok: true };
 };
 
@@ -65,120 +60,137 @@ const emptyForm: FormState = {
   mobile: "",
 };
 
-export default function settings() {
+export default function SettingsPage() {
   const { config } = useLoaderData() as LoaderData;
   const fetcher = useFetcher<typeof action>();
+
   const [form, setForm] = useState<FormState>({
     ...emptyForm,
     ...(config || {}),
   });
 
-  const onChange =
-    (field: keyof FormState) =>
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setForm((prev) => ({ ...prev, [field]: event.target.value }));
-    };
+  const [justSaved, setJustSaved] = useState(false);
+
+  const handleInput = (field: keyof FormState) => (event: any) => {
+    setForm((prev) => ({ ...prev, [field]: event.target.value }));
+  };
+
+  const handleSave = () => {
+    const data = new FormData();
+    (Object.entries(form) as [keyof FormState, string][]).forEach(
+      ([key, value]) => {
+        data.append(key, value ?? "");
+      },
+    );
+    fetcher.submit(data, { method: "post" });
+  };
 
   const isSaving = fetcher.state !== "idle";
-  const saved = fetcher.data && (fetcher.data as any).ok;
+
+  useEffect(() => {
+    if (fetcher.state === "idle" && (fetcher.data as any)?.ok) {
+      setJustSaved(true);
+      const timeout = setTimeout(() => setJustSaved(false), 2500);
+      return () => clearTimeout(timeout);
+    }
+  }, [fetcher.state, fetcher.data]);
 
   return (
-    <s-page heading="Return settings">
-      <s-section heading="Return address used on labels">
+    <s-page heading="Innstillinger">
+      <s-section heading="Retur adresse">
         <s-paragraph>
-          This address will be used as the store’s return address on
-          Cargonizer labels. If a field is left empty, the app will fall back
-          to the <code>LOGISTRA_RETURN_ADDRESS_*</code> environment variables
-          (and then the built-in defaults).
+          Denne adressen vil bli brukt som butikkens returadresse på
+          Cargonizer-etiketter. Hvis et felt står tomt, vil appen falle tilbake
+          på standardadressen som er satt av Appsalon.
         </s-paragraph>
 
-        <fetcher.Form method="post">
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "12px",
-              maxWidth: "480px",
-            }}
-          >
-            <label>
-              Name
-              <input
-                name="name"
-                value={form.name}
-                onChange={onChange("name")}
+        {justSaved && (
+          <s-box paddingBlockEnd="base">
+             <s-banner tone="success" heading="Lagret">
+            Endringer i returadressen er lagret.
+            </s-banner>
+          </s-box>
+        )}
+
+        <s-box
+           padding="base"
+           background="base"
+           borderWidth="base"
+           borderColor="subdued"
+           borderRadius="base"
+           maxInlineSize="480px"
+        >
+          <s-stack direction="block" gap="base">
+            <s-text-field
+              label="Navn/Bedrift"
+              name="name"
+              value={form.name}
+              onInput={handleInput("name")}
+              autocomplete="on"
+            />
+
+            <s-text-field
+              label="Gate adresse"
+              name="address1"
+              value={form.address1}
+              onInput={handleInput("address1")}
+              autocomplete="on"
+            />
+
+            <s-stack direction="inline" gap="base">
+              <s-text-field
+                label="Postkode"
+                name="postcode"
+                value={form.postcode}
+                onInput={handleInput("postcode")}
+                autocomplete="on"
               />
-            </label>
-
-            <label>
-              Address line 1
-              <input
-                name="address1"
-                value={form.address1}
-                onChange={onChange("address1")}
+              <s-text-field
+                label="By"
+                name="city"
+                value={form.city}
+                onInput={handleInput("city")}
+                autocomplete="on"
               />
-            </label>
+            </s-stack>
 
-            <div style={{ display: "flex", gap: "8px" }}>
-              <label style={{ flex: 1 }}>
-                Postcode
-                <input
-                  name="postcode"
-                  value={form.postcode}
-                  onChange={onChange("postcode")}
-                />
-              </label>
+            <s-text-field
+              label="Land"
+              name="country"
+              value={form.country}
+              onInput={handleInput("country")}
+              autocomplete="on"
+            />
 
-              <label style={{ flex: 2 }}>
-                City
-                <input
-                  name="city"
-                  value={form.city}
-                  onChange={onChange("city")}
-                />
-              </label>
+            <s-stack direction="inline" gap="base">
+              <s-text-field
+                label="E-post"
+                name="email"
+                value={form.email}
+                onInput={handleInput("email")}
+                autocomplete="on"
+              />
+              <s-text-field
+                label="Tlf"
+                name="mobile"
+                value={form.mobile}
+                onInput={handleInput("mobile")}
+                autocomplete="on"
+              />
+            </s-stack>
 
-              <label style={{ flex: 1 }}>
-                Country
-                <input
-                  name="country"
-                  value={form.country}
-                  onChange={onChange("country")}
-                />
-              </label>
-            </div>
-
-            <div style={{ display: "flex", gap: "8px" }}>
-              <label style={{ flex: 1 }}>
-                Email
-                <input
-                  name="email"
-                  type="email"
-                  value={form.email}
-                  onChange={onChange("email")}
-                />
-              </label>
-
-              <label style={{ flex: 1 }}>
-                Mobile
-                <input
-                  name="mobile"
-                  value={form.mobile}
-                  onChange={onChange("mobile")}
-                />
-              </label>
-            </div>
-
-            <div
-              style={{ display: "flex", alignItems: "center", gap: "8px" }}
-            >
-              <button type="submit" disabled={isSaving}>
-                {isSaving ? "Saving…" : "Save"}
-              </button>
-              {saved && <span>✅ Saved</span>}
-            </div>
-          </div>
-        </fetcher.Form>
+            <s-stack direction="inline" gap="base">
+              <s-button
+                variant="primary"
+                onClick={handleSave}
+                loading={isSaving}
+              >
+                Lagre
+              </s-button>
+              {justSaved && <s-text tone="success">Lagret</s-text>}
+            </s-stack>
+          </s-stack>
+        </s-box>
       </s-section>
     </s-page>
   );
