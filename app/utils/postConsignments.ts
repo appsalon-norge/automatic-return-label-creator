@@ -1,5 +1,6 @@
 import { ReturnApproveRequestMutation } from "app/types/admin.generated";
 import { XMLBuilder } from "fast-xml-parser";
+import { readReturnAddressSync } from "./returnAddressStorage";
 
 export interface BuiltConsignmentsXml {
   consignments: any[]; // JS objects representing each consignment
@@ -93,44 +94,55 @@ const buildConsignments = (
               rfo.order?.billingAddress?.phone,
           ),
         };
+
+        const savedReturnAddress = readReturnAddressSync();
+        console.log("[returnAddress] using config", savedReturnAddress);
         
         const storeAddress = {
           name: val(
-            process.env.LOGISTRA_RETURN_ADDRESS_NAME ||
+            savedReturnAddress?.name ||
+              process.env.LOGISTRA_RETURN_ADDRESS_NAME ||
               process.env.RETURN_ADDRESS_NAME ||
               "MONSIEUR SCABAL AS",
           ),
           address1: val(
-            process.env.LOGISTRA_RETURN_ADDRESS_ADDRESS1 ||
+            savedReturnAddress?.address1 ||
+              process.env.LOGISTRA_RETURN_ADDRESS_ADDRESS1 ||
               process.env.RETURN_ADDRESS_ADDRESS1 ||
               "Christian Michelsens gate 2B",
           ),
           postcode: val(
-            process.env.LOGISTRA_RETURN_ADDRESS_POSTCODE ||
+            savedReturnAddress?.postcode ||
+              process.env.LOGISTRA_RETURN_ADDRESS_POSTCODE ||
               process.env.RETURN_ADDRESS_POSTCODE ||
               "5012",
           ),
           city: val(
-            process.env.LOGISTRA_RETURN_ADDRESS_CITY ||
+            savedReturnAddress?.city ||
+              process.env.LOGISTRA_RETURN_ADDRESS_CITY ||
               process.env.RETURN_ADDRESS_CITY ||
               "Bergen",
           ),
           country: val(
-            process.env.LOGISTRA_RETURN_ADDRESS_COUNTRY ||
+            savedReturnAddress?.country ||
+              process.env.LOGISTRA_RETURN_ADDRESS_COUNTRY ||
               process.env.RETURN_ADDRESS_COUNTRY ||
               "NO",
           ),
           email: val(
-            process.env.LOGISTRA_RETURN_ADDRESS_EMAIL ||
+            savedReturnAddress?.email ||
+              process.env.LOGISTRA_RETURN_ADDRESS_EMAIL ||
               process.env.RETURN_ADDRESS_EMAIL ||
               "nettbutikk@scabal.no",
           ),
           mobile: val(
-            process.env.LOGISTRA_RETURN_ADDRESS_MOBILE ||
+            savedReturnAddress?.mobile ||
+              process.env.LOGISTRA_RETURN_ADDRESS_MOBILE ||
               process.env.RETURN_ADDRESS_MOBILE ||
               "90 92 85 26",
           ),
         };
+        
 
       return {
         consignment: {
